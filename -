@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>나의 이상형 월드컵 💛</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --cream: #fff9e9;
+      --cream-dark: #fff0bd;
+      --yellow: #ffd95a;
+      --yellow-dark: #e9ae22;
+      --brown: #5d482b;
+      --brown-light: #8a704c;
+      --white: #fffdf7;
+      --shadow: 0 12px 35px rgba(112, 82, 28, 0.12);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family:
+        "Pretendard",
+        "Apple SD Gothic Neo",
+        "Noto Sans KR",
+        system-ui,
+        sans-serif;
+      background:
+        radial-gradient(circle at 10% 10%, #fff0a8 0 7%, transparent 7.5%),
+        radial-gradient(circle at 90% 85%, #ffe8a0 0 8%, transparent 8.5%),
+        var(--cream);
+      color: var(--brown);
+    }
+
+    button {
+      font-family: inherit;
+    }
+
+    .app {
+      width: min(920px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 45px 0 60px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .header .emoji {
+      font-size: 54px;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: clamp(32px, 6vw, 52px);
+      letter-spacing: -2px;
+    }
+
+    .header p {
+      margin: 12px 0 0;
+      color: var(--brown-light);
+      font-size: 18px;
+    }
+
+    .screen {
+      display: none;
+      animation: fadeIn 0.35s ease;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .intro-card,
+    .game-card,
+    .result-card {
+      background: rgba(255, 253, 247, 0.94);
+      border: 2px solid #f4df9b;
+      border-radius: 30px;
+      box-shadow: var(--shadow);
+    }
+
+    .intro-card {
+      text-align: center;
+      padding: 48px 30px;
+    }
+
+    .intro-icon {
+      font-size: 75px;
+      margin-bottom: 15px;
+    }
+
+    .intro-card h2 {
+      font-size: 30px;
+      margin: 0 0 14px;
+    }
+
+    .intro-card p {
+      font-size: 18px;
+      line-height: 1.8;
+      color: var(--brown-light);
+      margin: 0 auto 28px;
+      max-width: 620px;
+    }
+
+    .start-button,
+    .restart-button {
+      border: 0;
+      background: var(--yellow);
+      color: #4c3818;
+      font-size: 21px;
+      font-weight: 800;
+      padding: 17px 38px;
+      border-radius: 999px;
+      cursor: pointer;
+      box-shadow: 0 7px 0 var(--yellow-dark);
+      transition: 0.15s ease;
+    }
+
+    .start-button:hover,
+    .restart-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 9px 0 var(--yellow-dark);
+    }
+
+    .start-button:active,
+    .restart-button:active {
+      transform: translateY(5px);
+      box-shadow: 0 2px 0 var(--yellow-dark);
+    }
+
+    .game-card {
+      padding: 30px;
+    }
+
+    .game-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .round-label {
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .match-count {
+      background: var(--cream-dark);
+      border-radius: 999px;
+      padding: 8px 15px;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .progress {
+      width: 100%;
+      height: 12px;
+      background: #f3e9ca;
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 28px;
+    }
+
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      background: var(--yellow);
+      border-radius: inherit;
+      transition: width 0.3s ease;
+    }
+
+    .question {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .question h2 {
+      margin: 0;
+      font-size: clamp(25px, 5vw, 34px);
+    }
+
+    .question p {
+      color: var(--brown-light);
+      margin: 8px 0 0;
+      font-size: 16px;
+    }
+
+    .choices {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .choice {
+      min-height: 230px;
+      border: 3px solid #f0dfaa;
+      background: #fffaf0;
+      border-radius: 25px;
+      cursor: pointer;
+      padding: 30px 20px;
+      color: var(--brown);
+      transition: 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .choice:hover {
+      border-color: var(--yellow);
+      background: #fff7d9;
+      transform: translateY(-4px);
+      box-shadow: 0 12px 25px rgba(112, 82, 28, 0.10);
+    }
+
+    .choice .choice-emoji {
+      font-size: 66px;
+      margin-bottom: 16px;
+    }
+
+    .choice .choice-name {
+      font-size: clamp(22px, 4vw, 29px);
+      font-weight: 900;
+    }
+
+    .choice .choice-desc {
+      font-size: 15px;
+      color: var(--brown-light);
+      margin-top: 8px;
+    }
+
+    .result-card {
+      text-align: center;
+      padding: 40px 30px;
+    }
+
+    .result-card .small-title {
+      font-size: 17px;
+      color: var(--brown-light);
+      font-weight: 700;
+    }
+
+    .result-card h2 {
+      font-size: clamp(30px, 6vw, 48px);
+      margin: 8px 0 25px;
+    }
+
+    .animal-box {
+      background: linear-gradient(135deg, #fff4bb, #fff9e9);
+      border-radius: 27px;
+      padding: 30px 22px;
+      margin: 0 auto 22px;
+      max-width: 650px;
+      border: 2px solid #f4dfa0;
+    }
+
+    .animal {
+      font-size: 90px;
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+
+    .animal-name {
+      font-size: 25px;
+      font-weight: 900;
+      margin-bottom: 12px;
+    }
+
+    .reason {
+      font-size: 17px;
+      line-height: 1.8;
+      color: var(--brown-light);
+      margin: 0 auto;
+      max-width: 530px;
+    }
+
+    .match-box {
+      background: #fffdf7;
+      border: 2px dashed #e7c96e;
+      border-radius: 22px;
+      padding: 22px;
+      margin: 0 auto 28px;
+      max-width: 650px;
+    }
+
+    .match-box .label {
+      font-size: 15px;
+      color: var(--brown-light);
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    .match-box .type {
+      font-size: 25px;
+      font-weight: 900;
+    }
+
+    .match-box p {
+      margin: 8px 0 0;
+      color: var(--brown-light);
+      line-height: 1.6;
+    }
+
+    .tip {
+      font-size: 14px;
+      color: #a08762;
+      margin-top: 20px;
+    }
+
+    @media (max-width: 650px) {
+      .app {
+        width: min(100% - 20px, 920px);
+        padding-top: 25px;
+      }
+
+      .intro-card,
+      .game-card,
+      .result-card {
+        border-radius: 23px;
+      }
+
+      .game-card {
+        padding: 20px;
+      }
+
+      .choices {
+        grid-template-columns: 1fr;
+      }
+
+      .choice {
+        min-height: 175px;
+        padding: 22px 15px;
+      }
+
+      .choice .choice-emoji {
+        font-size: 50px;
+        margin-bottom: 9px;
+      }
+
+      .game-top {
+        align-items: flex-start;
+      }
+
+      .round-label {
+        font-size: 17px;
+      }
+
+      .match-count {
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="app">
+
+    <header class="header">
+      <span class="emoji">💛</span>
+      <h1>이상형 월드컵</h1>
+      <p>내 마음속 이상형 요소를 하나씩 골라보세요!</p>
+    </header>
+
+    <!-- 시작 화면 -->
+    <section id="introScreen" class="screen active">
+      <div class="intro-card">
+        <div class="intro-icon">🌼</div>
+        <h2>나의 이상형은 어떤 모습일까?</h2>
+        <p>
+          머리 길이부터 눈매, 웃는 모습, 말투까지<br>
+          16가지 매력 요소 중 마음에 드는 쪽을 골라주세요.<br>
+          마지막에는 나와 잘 어울리는 동물과 궁합 유형을 알려드려요!
+        </p>
+        <button class="start-button" onclick="startGame()">월드컵 시작하기 ✨</button>
+      </div>
+    </section>
+
+    <!-- 게임 화면 -->
+    <section id="gameScreen" class="screen">
+      <div class="game-card">
+
+        <div class="game-top">
+          <div class="round-label" id="roundLabel">예선</div>
+          <div class="match-count" id="matchCount">1 / 8</div>
+        </div>
+
+        <div class="progress">
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <div class="question">
+          <h2>어느 쪽이 더 끌리나요?</h2>
+          <p>더 마음에 드는 이상형 요소를 하나 선택하세요 💕</p>
+        </div>
+
+        <div class="choices">
+          <button class="choice" id="choiceA" onclick="choose(0)">
+            <span class="choice-emoji"></span>
+            <span class="choice-name"></span>
+            <span class="choice-desc"></span>
+          </button>
+
+          <button class="choice" id="choiceB" onclick="choose(1)">
+            <span class="choice-emoji"></span>
+            <span class="choice-name"></span>
+            <span class="choice-desc"></span>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 결과 화면 -->
+    <section id="resultScreen" class="screen">
+      <div class="result-card">
+
+        <div class="small-title">🏆 최종 선택</div>
+        <h2 id="resultTitle"></h2>
+
+        <div class="animal-box">
+          <div class="animal" id="animalEmoji"></div>
+          <div class="animal-name" id="animalName"></div>
+          <p class="reason" id="animalReason"></p>
+        </div>
+
+        <div class="match-box">
+          <div class="label">💛 잘 맞는 다른 유형</div>
+          <div class="type" id="matchType"></div>
+          <p id="matchReason"></p>
+        </div>
+
+        <button class="restart-button" onclick="restartGame()">
+          다시 고르기 🔄
+        </button>
+
+        <div class="tip">
+          ※ 재미로 보는 이상형 테스트예요 :)
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    /*
+      =========================================
+      이상형 월드컵 데이터
+      총 16가지 요소
+      =========================================
+    */
+
+    const originalItems = [
+      {
+        name: "긴 머리",
+        emoji: "💇‍♀️",
+        desc: "찰랑찰랑 분위기 있는 긴 머리",
+        animal: "🦊",
+        animalName: "여우",
+        reason: "긴 머리의 부드럽고 우아한 분위기는 여우처럼\n세련되면서도 은근히 매력적인 느낌과 잘 어울려요.",
+        match: "차분하고 다정한 타입",
+        matchReason: "감성적인 분위기를 좋아하는 만큼, 편안하게 대화가 통하는 사람과 좋은 케미를 만들기 쉬워요."
+      },
+      {
+        name: "단발 머리",
+        emoji: "💇",
+        desc: "산뜻하고 귀여운 단발 스타일",
+        animal: "🐰",
+        animalName: "토끼",
+        reason: "단발의 산뜻하고 발랄한 이미지는\n통통 튀면서도 사랑스러운 토끼의 매력과 닮았어요.",
+        match: "밝고 장난기 많은 타입",
+        matchReason: "서로 웃고 장난치며 자연스럽게 가까워지는 관계가 잘 맞아요."
+      },
+      {
+        name: "큰 눈",
+        emoji: "👀",
+        desc: "또렷하고 시원한 눈매",
+        animal: "🦌",
+        animalName: "사슴",
+        reason: "맑고 또렷한 눈이 주는 순수하고 청초한 느낌이\n사슴의 맑은 눈망울과 잘 어울려요.",
+        match: "따뜻하고 배려심 많은 타입",
+        matchReason: "상대의 감정을 잘 살펴주고 편안한 분위기를 만들어주는 사람이 잘 맞아요."
+      },
+      {
+        name: "고양이 눈",
+        emoji: "😼",
+        desc: "살짝 올라간 매력적인 눈매",
+        animal: "🐈",
+        animalName: "고양이",
+        reason: "도도하면서도 신비로운 눈매는\n자기만의 분위기가 있는 고양이와 찰떡이에요.",
+        match: "자신감 있는 독립형",
+        matchReason: "서로의 개성을 존중하면서도 필요할 때 확실하게 표현하는 관계가 잘 맞아요."
+      },
+      {
+        name: "웃는 눈",
+        emoji: "😊",
+        desc: "웃을 때 눈까지 함께 웃는 모습",
+        animal: "🐶",
+        animalName: "강아지",
+        reason: "눈웃음이 만드는 친근하고 따뜻한 인상은\n누구에게나 사랑받는 강아지의 매력과 닮았어요.",
+        match: "밝고 긍정적인 타입",
+        matchReason: "함께 있을 때 웃음이 많고 서로의 하루를 즐겁게 만들어주는 조합이에요."
+      },
+      {
+        name: "자연스러운 미소",
+        emoji: "☺️",
+        desc: "꾸밈없이 편안한 웃음",
+        animal: "🐹",
+        animalName: "햄스터",
+        reason: "소박하고 귀여운 자연스러운 미소는\n햄스터처럼 보면 볼수록 정감 가는 매력이 있어요.",
+        match: "편안하고 소탈한 타입",
+        matchReason: "억지로 꾸미지 않아도 서로 편하게 있을 수 있는 관계가 잘 맞아요."
+      },
+      {
+        name: "낮은 목소리",
+        emoji: "🎙️",
+        desc: "차분하고 안정감 있는 목소리",
+        animal: "🐻",
+        animalName: "곰",
+        reason: "낮고 부드러운 목소리가 주는 든든한 느낌은\n포근하고 믿음직한 곰의 이미지와 잘 맞아요.",
+        match: "침착하고 안정적인 타입",
+        matchReason: "감정적으로 흔들리기보다 서로 의지하며 차분하게 관계를 만들어가요."
+      },
+      {
+        name: "웃음소리 좋은 사람",
+        emoji: "🤣",
+        desc: "듣기만 해도 같이 웃게 되는 웃음",
+        animal: "🐬",
+        animalName: "돌고래",
+        reason: "경쾌하고 밝은 웃음은\n돌고래처럼 주변까지 즐겁게 만드는 에너지가 있어요.",
+        match: "유쾌하고 사교적인 타입",
+        matchReason: "함께 새로운 경험을 즐기고 웃음 가득한 데이트를 하는 궁합이에요."
+      },
+      {
+        name: "다정한 말투",
+        emoji: "💬",
+        desc: "말 한마디에도 배려가 느껴지는 스타일",
+        animal: "🐑",
+        animalName: "양",
+        reason: "부드럽고 포근한 말투는\n순하고 따뜻한 양의 이미지와 잘 어울려요.",
+        match: "섬세하고 공감형인 타입",
+        matchReason: "작은 감정 변화도 알아채고 서로를 세심하게 챙겨주는 조합이에요."
+      },
+      {
+        name: "재치 있는 말투",
+        emoji: "😎",
+        desc: "센스 있는 농담과 빠른 받아치기",
+        animal: "🦦",
+        animalName: "수달",
+        reason: "장난스럽고 센스 있는 매력은\n수달처럼 귀엽고 영리하면서 유쾌한 분위기를 만들어요.",
+        match: "유머 감각 좋은 타입",
+        matchReason: "말이 잘 통하고 서로 티키타카가 잘 되는 관계가 가장 잘 맞아요."
+      },
+      {
+        name: "깔끔한 스타일",
+        emoji: "✨",
+        desc: "단정하고 정돈된 옷차림",
+        animal: "🐧",
+        animalName: "펭귄",
+        reason: "단정하고 깔끔한 모습에서 느껴지는 신뢰감이\n반듯하고 귀여운 펭귄의 이미지와 닮았어요.",
+        match: "성실하고 계획적인 타입",
+        matchReason: "서로의 생활 리듬을 존중하고 약속을 잘 지키는 관계가 잘 맞아요."
+      },
+      {
+        name: "편안한 캐주얼",
+        emoji: "👕",
+        desc: "꾸안꾸 느낌의 자연스러운 스타일",
+        animal: "🐨",
+        animalName: "코알라",
+        reason: "편안하고 자연스러운 분위기는\n느긋하고 포근한 코알라의 매력과 잘 어울려요.",
+        match: "느긋하고 편안한 타입",
+        matchReason: "특별한 걸 하지 않아도 함께 있는 것만으로 편안한 관계가 잘 맞아요."
+      },
+      {
+        name: "스포티한 스타일",
+        emoji: "🏃",
+        desc: "활동적이고 건강한 느낌",
+        animal: "🐕",
+        animalName: "리트리버",
+        reason: "활동적이고 밝은 분위기는\n에너지 넘치고 친근한 리트리버의 이미지와 잘 맞아요.",
+        match: "활동적인 긍정형",
+        matchReason: "함께 운동하거나 여행하면서 추억을 쌓는 관계가 잘 맞아요."
+      },
+      {
+        name: "안경이 잘 어울리는 사람",
+        emoji: "🤓",
+        desc: "지적이고 차분한 안경 스타일",
+        animal: "🦉",
+        animalName: "부엉이",
+        reason: "안경이 주는 지적이고 차분한 분위기는\n현명하고 신비로운 부엉이의 이미지와 잘 어울려요.",
+        match: "지적 호기심이 많은 타입",
+        matchReason: "서로 관심사를 깊게 이야기하며 지적인 대화를 즐길 수 있어요."
+      },
+      {
+        name: "듬직한 체격",
+        emoji: "💪",
+        desc: "든든하고 안정감 있는 느낌",
+        animal: "🐻",
+        animalName: "곰",
+        reason: "든든하고 포근한 체격에서 느껴지는 안정감이\n믿음직한 곰의 이미지와 찰떡이에요.",
+        match: "책임감 강한 타입",
+        matchReason: "서로에게 안정감을 주고 어려운 순간에도 의지가 되는 관계예요."
+      },
+      {
+        name: "아담하고 귀여운 느낌",
+        emoji: "🌷",
+        desc: "작고 사랑스러운 분위기",
+        animal: "🐿️",
+        animalName: "다람쥐",
+        reason: "아담하고 귀여운 분위기는\n작지만 생기 넘치는 다람쥐의 사랑스러움과 닮았어요.",
+        match: "세심하게 챙겨주는 타입",
+        matchReason: "서로 부족한 부분을 자연스럽게 채워주며 다정하게 가까워지는 궁합이에요."
+      }
+    ];
+
+    let currentRound = [];
+    let nextRound = [];
+    let currentIndex = 0;
+    let totalMatches = 0;
+    let completedMatches = 0;
+    let finalWinner = null;
+
+    const introScreen = document.getElementById("introScreen");
+    const gameScreen = document.getElementById("gameScreen");
+    const resultScreen = document.getElementById("resultScreen");
+
+    const roundLabel = document.getElementById("roundLabel");
+    const matchCount = document.getElementById("matchCount");
+    const progressBar = document.getElementById("progressBar");
+
+    const choiceA = document.getElementById("choiceA");
+    const choiceB = document.getElementById("choiceB");
+
+    function showScreen(screen) {
+      [introScreen, gameScreen, resultScreen].forEach(s => {
+        s.classList.remove("active");
+      });
+      screen.classList.add("active");
+    }
+
+    function startGame() {
+      currentRound = shuffle([...originalItems]);
+      currentIndex = 0;
+      nextRound = [];
+      completedMatches = 0;
+      totalMatches = 15;
+
+      showScreen(gameScreen);
+      renderMatch();
+    }
+
+    function shuffle(array) {
+      const result = [...array];
+
+      for (let i = result.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [result[i], result[j]] = [result[j], result[i]];
+      }
+
+      return result;
+    }
+
+    function getRoundName() {
+      if (currentRound.length === 16) return "16강";
+      if (currentRound.length === 8) return "8강";
+      if (currentRound.length === 4) return "4강";
+      if (currentRound.length === 2) return "결승";
+      return "최종";
+    }
+
+    function renderMatch() {
+      if (currentRound.length === 1) {
+        finalWinner = currentRound[0];
+        showResult();
+        return;
+      }
+
+      const a = currentRound[currentIndex];
+      const b = currentRound[currentIndex + 1];
+
+      const matchesInRound = currentRound.length / 2;
+
+      roundLabel.textContent = getRoundName();
+      matchCount.textContent =
+        `${Math.floor(currentIndex / 2) + 1} / ${matchesInRound}`;
+
+      const progress =
+        (completedMatches / totalMatches) * 100;
+
+      progressBar.style.width = `${Math.min(progress, 100)}%`;
+
+      setChoice(choiceA, a);
+      setChoice(choiceB, b);
+    }
+
+    function setChoice(button, item) {
+      button.querySelector(".choice-emoji").textContent = item.emoji;
+      button.querySelector(".choice-name").textContent = item.name;
+      button.querySelector(".choice-desc").textContent = item.desc;
+    }
+
+    function choose(which) {
+      const winner = currentRound[currentIndex + which];
+
+      nextRound.push(winner);
+      currentIndex += 2;
+      completedMatches++;
+
+      /*
+        현재 라운드가 끝났으면 다음 라운드로 이동
+      */
+      if (currentIndex >= currentRound.length) {
+        currentRound = nextRound;
+        nextRound = [];
+        currentIndex = 0;
+      }
+
+      renderMatch();
+    }
+
+    function showResult() {
+      showScreen(resultScreen);
+
+      progressBar.style.width = "100%";
+
+      document.getElementById("resultTitle").textContent =
+        finalWinner.name;
+
+      document.getElementById("animalEmoji").textContent =
+        finalWinner.animal;
+
+      document.getElementById("animalName").textContent =
+        finalWinner.animalName;
+
+      document.getElementById("animalReason").innerHTML =
+        finalWinner.reason.replace(/\n/g, "<br>");
+
+      document.getElementById("matchType").textContent =
+        finalWinner.match;
+
+      document.getElementById("matchReason").textContent =
+        finalWinner.matchReason;
+    }
+
+    function restartGame() {
+      finalWinner = null;
+      currentRound = [];
+      nextRound = [];
+      currentIndex = 0;
+      completedMatches = 0;
+
+      showScreen(introScreen);
+    }
+  </script>
+
+</body>
+</html>
